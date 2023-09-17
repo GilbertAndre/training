@@ -1,1 +1,6 @@
 testing git branch
+
+git checkout main
+git diff gitbranch1
+git merge gitbranch1
+git push origin main
