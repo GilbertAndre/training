@@ -74,6 +74,10 @@ resource "aws_launch_template" "this" {
     security_groups             = [aws_security_group.asg_sg.id]
   }
 
+  iam_instance_profile {
+    name = aws_iam_instance_profile.this.name
+  }
+
   user_data = base64encode(<<-EOF
     #!/bin/bash
     yum update -y
