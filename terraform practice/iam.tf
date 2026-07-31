@@ -10,6 +10,11 @@ resource "aws_iam_role" "this" {
         Effect    = "Allow"
         Principal = { Service = "ec2.amazonaws.com" }
         Action    = "sts:AssumeRole"
+      },
+      {
+        Effect    = "Allow"
+        Principal = { Service = "lambda.amazonaws.com" }
+        Action    = "sts:AssumeRole"
       }
     ]
   })
@@ -49,6 +54,11 @@ resource "aws_iam_policy" "this" {
           "logs:PutLogEvents"
         ]
         Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["lambda:InvokeFunction"]
+        Resource = "arn:aws:lambda:*:*:function:${var.project_name}-*"
       }
     ]
   })
@@ -59,6 +69,13 @@ resource "aws_iam_policy" "this" {
 resource "aws_iam_role_policy_attachment" "this" {
   role       = aws_iam_role.this.name
   policy_arn = aws_iam_policy.this.arn
+}
+
+# ─── Attach AWS managed Lambda basic execution policy ────────────────────────
+
+resource "aws_iam_role_policy_attachment" "lambda_basic" {
+  role       = aws_iam_role.this.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 # ─── Instance Profile (attach role to EC2) ───────────────────────────────────
