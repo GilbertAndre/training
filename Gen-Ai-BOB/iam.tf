@@ -81,3 +81,64 @@ resource "aws_iam_role_policy_attachment" "lambda_rds" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.rds_describe.arn
 }
+
+# ─── S3 policy ───────────────────────────────────────────────────────────────
+
+resource "aws_iam_policy" "s3" {
+  name        = "${var.project_name}-s3-policy"
+  description = "Allow Lambda to read and write S3 objects"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.s3_bucket_name}",
+          "arn:aws:s3:::${var.s3_bucket_name}/*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_s3" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.s3.arn
+}
+
+# ─── EC2 describe policy ──────────────────────────────────────────────────────
+
+resource "aws_iam_policy" "ec2_describe" {
+  name        = "${var.project_name}-ec2-describe-policy"
+  description = "Allow Lambda to describe EC2 instances and related resources"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:DescribeInstances",
+          "ec2:DescribeInstanceStatus",
+          "ec2:DescribeRegions",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeVpcs"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_ec2" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.ec2_describe.arn
+}

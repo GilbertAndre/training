@@ -51,3 +51,11 @@ variable "secret_name_prefix" {
   type        = string
   default     = "genai-app/"
 }
+
+# ── S3 ─────────────────────────────────────────────────────────────────────
+
+variable "s3_bucket_name" {
+  description = "S3 bucket name the Lambda is allowed to read/write"
+  type        = string
+  default     = "genai-app-bucket"
+}
